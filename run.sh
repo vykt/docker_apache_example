@@ -1,1 +1,1 @@
-docker run -itd -p 80:80 example-apache:debian-stable
+docker run -itd --expose=5000 example-apache:debian-stable

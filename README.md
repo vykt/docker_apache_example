@@ -3,20 +3,21 @@ Example Dockerfile running Apache2 on Debian stable.
 It is probably possible to port it to Debian stable-slim, reducing image size to 25Mb.
 
 
-Build container:
+ --- BUILD CONTAINER:
 
 docker build -t example-apache:debian-stable .
 
 
-Get IP of container:
+ --- GET IP OF CONTAINER:
 
 docker inspect <container name> | grep IP
 
 
-Take the IP provided by the above command.
+ --- INTERACT W/ API:
 
+Using the IP provided by the above command:
 
+curl -X POST https://<ip>:5000/push=<value>	- Push to page
+curl -X DELETE https://<ip>:5000/		- Pop from page
 
-
-It's supposed to work with just "https://localhost:80", however
-it doesn't let me connect & that' all beyond the scope of this.
+To view the page/stack, connect to <ip> on port 80. Apache should send the page.
