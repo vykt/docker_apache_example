@@ -3,6 +3,7 @@
 from flask import Flask, jsonify
 from flask_restful import Resource, Api
 import sys
+import re
 
 
 '''
@@ -14,20 +15,30 @@ Connect via web browser to apache server to view the stack.
 app = Flask(__name__)
 api = Api(app)
 
-# Clear default apache file
+
+# Misc. presets
+stack = []
+heading = "<!doctype html>\n<p>Apache & Flask stack:</p>\n"
+
+
+# Write file
 page = "/var/www/html/index.html"
-#fd = open(page, "w")
-#fd.write('')
-#fd.close()
+fd = open(page, "w")
+fd.write(heading)
+fd.close()
+
+# Misc. presets
+stack = []
 
 class StackPush(Resource):
     # Push
     def post(self, content):
         try:
             fd = open(page, "a")
-            content = str(content + '\n')
-            content = fd.write(content)
+            content = '<p>' + str(content) + '</p>'
+            fd.write(content)
             fd.close()
+            stack.append(content)
             return jsonify({"success": 1})
         except:
             return jsonify({"success": 0})
@@ -36,14 +47,13 @@ class StackPop(Resource):
     # Pop
     def delete(self):
         try:
-            fd = open(page, "r+")
-            content = fd.readlines()
-            fd.seek(0)
-            fd.truncate()
-            for i in range(len(content)-1):
-                fd.write(content[i])
+            content = stack.pop()
+            fd = open(page, "w")
+            fd.write(heading)
+            for i in range(0, len(stack)):
+                fd.write(stack[i])
             fd.close()
-            return jsonify({"success": 1, "content": content[-1].rstrip()})
+            return jsonify({"success": 1, "content": re.sub('<[^<]+?>', '', content)})
         except:
             return jsonify({"success": 0, "content": 0})
 
